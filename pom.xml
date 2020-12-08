@@ -221,12 +221,15 @@
 
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+	      <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-deploy-plugin</artifactId>
+	      <configuration>
+		<skip>true</skip>
+	      </configuration>
+	    </plugin>
+	    <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
             </plugin>
             <plugin>
                 <!-- Used to copy test results into test reports module -->
@@ -323,6 +326,28 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
             </plugin>
+	    <plugin>
+	      <groupId>com.spotify</groupId>
+	      <artifactId>dockerfile-maven-plugin</artifactId>
+	      <version>1.4.13</version>
+	      <inherited>false</inherited>
+	      <executions>
+		<execution>
+		  <phase>deploy</phase>
+		  <goals>
+		    <goal>build</goal>
+              <goal>tag</goal>
+              <goal>push</goal>
+		  </goals>
+		</execution>
+	      </executions>
+	      <configuration>
+		<tag>${project.version}</tag>
+		<username>${env.DOCKER_USERNAME}</username>
+		<password>${env.DOCKER_PASSWORD}</password>
+        <repository>registry.hub.docker.com/${env.DOCKER_USERNAME}/${project.artifactId}</repository>
+	      </configuration>
+	    </plugin>
         </plugins>
     </build>
 
@@ -703,6 +728,11 @@
             <dependency>
                 <groupId>org.finos.legend.shared</groupId>
                 <artifactId>legend-shared-pac4j-kerberos</artifactId>
+                <version>${legend.shared.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.finos.legend.shared</groupId>
+                <artifactId>legend-shared-pac4j-gitlab</artifactId>
                 <version>${legend.shared.version}</version>
             </dependency>
             <!-- LEGEND SHARED -->
