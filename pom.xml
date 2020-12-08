@@ -272,6 +272,9 @@
                 <configuration>
                     <failOnWarning>true</failOnWarning>
                     <ignoreNonCompile>true</ignoreNonCompile>
+		    <ignoredDependencies>
+		      <ignoredDependency>org.finos.legend.shared:legend-shared-pac4j-gitlab:jar:${legend.shared.version}</ignoredDependency>
+		    </ignoredDependencies>
                 </configuration>
                 <executions>
                     <execution>
