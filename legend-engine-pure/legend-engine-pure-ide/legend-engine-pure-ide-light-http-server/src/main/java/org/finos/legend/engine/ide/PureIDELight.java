@@ -103,6 +103,7 @@ public class PureIDELight extends PureIDEServer
                 .with(this.buildCore("legend-engine-xts-analytics/legend-engine-xts-analytics-class/legend-engine-xt-analytics-class-pure", "analytics-class"))
                 .with(this.buildCore("legend-engine-xts-analytics/legend-engine-xts-analytics-binding/legend-engine-xt-analytics-binding-pure", "analytics-binding"))
                 .with(this.buildCore("legend-engine-xts-analytics/legend-engine-xts-analytics-function/legend-engine-xt-analytics-function-pure", "analytics-function"))
+                .with(this.buildCore("legend-engine-xts-analytics/legend-engine-xts-analytics-service/legend-engine-xt-analytics-service-pure", "analytics-service"))
                 .with(this.buildCore("legend-engine-xts-analytics/legend-engine-xts-analytics-lineage/legend-engine-xt-analytics-lineage-pure", "analytics-lineage"))
                 .with(this.buildCore("legend-engine-xts-analytics/legend-engine-xts-analytics-search/legend-engine-xt-analytics-search-pure", "analytics-search"))
                 .with(this.buildCore("legend-engine-xts-java/legend-engine-xt-javaGeneration-pure", "external-language-java"))

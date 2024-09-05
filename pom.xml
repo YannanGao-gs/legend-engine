@@ -1960,6 +1960,12 @@
 
             <dependency>
                 <groupId>org.finos.legend.engine</groupId>
+                <artifactId>legend-engine-xt-analytics-service-pure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.finos.legend.engine</groupId>
                 <artifactId>legend-engine-xt-analytics-binding-http-api</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright 2022 Goldman Sachs
+ Copyright 2023 Goldman Sachs
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,26 +17,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.finos.legend.engine</groupId>
-        <artifactId>legend-engine</artifactId>
+        <artifactId>legend-engine-xts-analytics</artifactId>
         <version>4.55.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>legend-engine-xts-analytics</artifactId>
+    <artifactId>legend-engine-xts-analytics-service</artifactId>
     <packaging>pom</packaging>
-    <name>Legend Engine - XTS - Analytics</name>
-
-
+    <name>Legend Engine - XTS - Analytics - Service</name>
 
     <modules>
-        <module>legend-engine-xts-analytics-lineage</module>
-        <module>legend-engine-xts-analytics-mapping</module>
-        <module>legend-engine-xts-analytics-class</module>
-        <module>legend-engine-xts-analytics-function</module>
-        <module>legend-engine-xts-analytics-service</module>
-        <module>legend-engine-xts-analytics-binding</module>
-        <module>legend-engine-xts-analytics-search</module>
-        <module>legend-engine-xts-analytics-store</module>
-        <module>legend-engine-xts-analytics-quality</module>
+        <module>legend-engine-xt-analytics-service-pure</module>
     </modules>
 </project>

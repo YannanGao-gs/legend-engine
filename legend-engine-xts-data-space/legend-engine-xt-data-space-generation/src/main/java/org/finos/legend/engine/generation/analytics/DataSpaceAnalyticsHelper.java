@@ -40,6 +40,7 @@ import org.finos.legend.engine.protocol.pure.v1.model.context.PureModelContextDa
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.result.ResultType;
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.result.TDSResultType;
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.dataSpace.DataSpace;
+import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.dataSpace.DataSpacePackageableElementExecutable;
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.dataSpace.DataSpaceTemplateExecutable;
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain.Function;
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain.Multiplicity;
@@ -58,12 +59,12 @@ import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.PackageableElem
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.extension.Profile;
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.ConcreteFunctionDefinition;
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.FunctionDefinition;
-import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.LambdaFunction;
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.type.Class;
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.type.Enum;
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.type.Enumeration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
@@ -135,7 +136,7 @@ public class DataSpaceAnalyticsHelper
 
                 // Here we prune the bindings to have just packageableIncludes part of ModelUnit
                 // because we only need that as a part of analytics.
-                List<String> bindingPaths = pureModelContextData.getElements().stream().filter(el -> el instanceof  Binding).map(b ->
+                List<String> bindingPaths = pureModelContextData.getElements().stream().filter(el -> el instanceof Binding).map(b ->
                 {
                     Binding _binding = new Binding();
                     _binding.name = b.name;
@@ -163,10 +164,12 @@ public class DataSpaceAnalyticsHelper
                 Root_meta_analytics_binding_modelCoverage_BindingModelCoverageAnalysisResult bindingAnalysisResult = core_analytics_binding_modelCoverage_analytics.Root_meta_analytics_binding_modelCoverage_getBindingModelCoverage_Binding_MANY__BindingModelCoverageAnalysisResult_1_(bindings, pureModel.getExecutionSupport());
                 List<String> functionPaths = pureModelContextData.getElements().stream().filter(el -> el instanceof Function).map(e -> e.getPath()).collect(Collectors.toList());
                 List<String> allExtraElements = functionPaths;
+                List<String> dataspaceExecutablePath = dataSpaceProtocol.executables != null ? dataSpaceProtocol.executables.stream().filter(ex -> ex instanceof DataSpacePackageableElementExecutable).map(executable -> ((DataSpacePackageableElementExecutable) executable).executable.path).collect(Collectors.toList()) : Collections.emptyList();
                 allExtraElements.add(dataSpaceProtocol.getPath());
+                allExtraElements.addAll(dataspaceExecutablePath);
                 pureModelContextData.getElements().stream().filter(el -> allExtraElements.contains(el.getPath())).forEach(builder::addElement);
                 List<org.finos.legend.engine.protocol.pure.v1.model.packageableElement.PackageableElement> elements = builder.build().getElements();
-                RichIterable<? extends ConcreteFunctionDefinition<? extends  Object>> functions = org.eclipse.collections.api.factory.Lists.mutable.ofAll(functionPaths.stream().map(path ->
+                RichIterable<? extends ConcreteFunctionDefinition<? extends Object>> functions = org.eclipse.collections.api.factory.Lists.mutable.ofAll(functionPaths.stream().map(path ->
                 {
                     ConcreteFunctionDefinition<? extends Object> function = null;
                     try
@@ -187,11 +190,31 @@ public class DataSpaceAnalyticsHelper
                     return null;
                 }).filter(c -> c != null).collect(Collectors.toList()));
                 Root_meta_analytics_function_modelCoverage_FunctionModelCoverageAnalysisResult functionCoverageAnalysisResult = core_analytics_function_modelCoverage_analytics.Root_meta_analytics_function_modelCoverage_getFunctionModelCoverage_ConcreteFunctionDefinition_MANY__FunctionModelCoverageAnalysisResult_1_(org.eclipse.collections.impl.factory.Lists.mutable.ofAll(functions), pureModel.getExecutionSupport());
+                RichIterable<? extends Root_meta_legend_service_metamodel_Service> services = org.eclipse.collections.api.factory.Lists.mutable.ofAll(dataspaceExecutablePath.stream().map(path ->
+                {
+                    try
+                    {
+                        org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.PackageableElement service = pureModel.getPackageableElement(path);
+                        if (service instanceof Root_meta_legend_service_metamodel_Service)
+                        {
+                            return (Root_meta_legend_service_metamodel_Service) service;
+                        }
+                    }
+                    catch (Exception ignored)
+                    {
+
+                    }
+                    return null;
+                }).filter(c -> c != null).collect(Collectors.toList()));
+                Root_meta_analytics_service_modelCoverage_ServiceModelCoverageAnalysisResult serviceCoverageAnalysisResult = core_analytics_service_modelCoverage_analytics.Root_meta_analytics_service_modelCoverage_getServiceModelCoverage_Service_MANY__ServiceModelCoverageAnalysisResult_1_(org.eclipse.collections.impl.factory.Lists.mutable.ofAll(services), pureModel.getExecutionSupport());
                 MutableList<? extends Class<? extends Object>> coveredClasses = mappingModelCoverageAnalysisResult._classes().toList();
                 List<String> coveredClassesPaths = coveredClasses.stream().map(c -> HelperModelBuilder.getElementFullPath(c, pureModel.getExecutionSupport())).collect(Collectors.toList());
-                coveredClasses = org.eclipse.collections.impl.factory.Lists.mutable.ofAll(Stream.concat(Stream.concat(functionCoverageAnalysisResult._classes().toList().stream().filter(c -> !coveredClassesPaths.contains(HelperModelBuilder.getElementFullPath(c, pureModel.getExecutionSupport()))),
-                        bindingAnalysisResult._classes().toList().stream().filter(c -> !coveredClassesPaths.contains(HelperModelBuilder.getElementFullPath(c, pureModel.getExecutionSupport())))).distinct(),
-                        mappingModelCoverageAnalysisResult._classes().toList().stream()).collect(Collectors.toList()));
+                coveredClasses = org.eclipse.collections.impl.factory.Lists.mutable.ofAll(
+                        Stream.concat(
+                                Stream.concat(serviceCoverageAnalysisResult._classes().toList().stream().filter(c -> !coveredClassesPaths.contains(HelperModelBuilder.getElementFullPath(c, pureModel.getExecutionSupport()))),
+                                Stream.concat(functionCoverageAnalysisResult._classes().toList().stream().filter(c -> !coveredClassesPaths.contains(HelperModelBuilder.getElementFullPath(c, pureModel.getExecutionSupport()))),
+                                              bindingAnalysisResult._classes().toList().stream().filter(c -> !coveredClassesPaths.contains(HelperModelBuilder.getElementFullPath(c, pureModel.getExecutionSupport()))))).distinct(),
+                                mappingModelCoverageAnalysisResult._classes().toList().stream()).collect(Collectors.toList()));
                 MutableList<Enumeration<? extends Enum>> coveredEnumerations = org.eclipse.collections.impl.factory.Lists.mutable.ofAll(Stream.concat(mappingModelCoverageAnalysisResult._enumerations().toList().stream(), functionCoverageAnalysisResult._enumerations().toList().stream()).distinct().collect(Collectors.toList()));
                 PureModelContextData classes = PureModelContextDataGenerator.generatePureModelContextDataFromClasses(coveredClasses, clientVersion, pureModel.getExecutionSupport());
                 PureModelContextData enums = PureModelContextDataGenerator.generatePureModelContextDataFromEnumerations(coveredEnumerations, clientVersion, pureModel.getExecutionSupport());
